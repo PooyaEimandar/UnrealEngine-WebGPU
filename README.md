@@ -27,7 +27,7 @@ Getting Unreal Engine into a browser tab is quite the workout. Help it grow
 from “look, it runs!” into something developers can confidently ship.
 
 Your support gives me more time for bug fixes, performance improvements,
-browser compatibility, Windows/Linux support and better documentation—and
+browser compatibility, Windows/Linux support and better documentation and
 perhaps a little more coffee while the shaders compile. ☕
 
 **[Become a GitHub Sponsor 💖](https://github.com/sponsors/PooyaEimandar)**
@@ -76,7 +76,7 @@ before downloading the game.
 2. While signed in, confirm that you can open
    [EpicGames/UnrealEngine](https://github.com/EpicGames/UnrealEngine).
 3. Confirm access to
-   [PooyaEimandar/UnrealEngine — `5.8-webgpu`](https://github.com/PooyaEimandar/UnrealEngine/tree/5.8-webgpu).
+   [PooyaEimandar/UnrealEngine - `5.8-webgpu`](https://github.com/PooyaEimandar/UnrealEngine/tree/5.8-webgpu).
 
 A GitHub **404** can mean that your account lacks access. If Epic's repository
 opens but this fork does not, report the access problem in this public
@@ -304,6 +304,6 @@ components retain their respective licenses.
 The banner adapts the [WebGPU logo by W3C](https://www.w3.org/2023/02/webgpu-logos.html),
 licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
-Unreal Engine is a trademark or registered trademark of Epic Games, Inc.
+Unreal Engine is a trademark or registered trademark of [Epic Games, Inc](https://www.epicgames.com/site/home).
 This is an independent community project and is not an official Epic Games
 product or endorsed by Epic Games.
