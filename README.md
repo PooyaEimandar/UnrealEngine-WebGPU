@@ -17,6 +17,10 @@ restricted [Unreal Engine fork](https://github.com/PooyaEimandar/UnrealEngine/tr
 You need access to that fork to follow this guide. This is a modified engine,
 not a plugin you can install into the standard Epic Games Launcher build.
 
+[![Unreal Engine gameplay running in a browser with WebGPU](asset/unreal-engine-webgpu.gif)](https://youtu.be/AyVYaKl-kJY)
+
+[▶ Click the preview to watch the full demo on YouTube.](https://youtu.be/AyVYaKl-kJY)
+
 ## Sponsor the project
 
 Getting Unreal Engine into a browser tab is quite the workout. Help it grow
