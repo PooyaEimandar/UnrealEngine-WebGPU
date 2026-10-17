@@ -42,14 +42,50 @@ The current branch is **`5.8-webgpu`**, based on **Unreal Engine 5.8.3**.
 | Windows | Coming soon — build instructions and validation are planned |
 | Linux | Coming soon — build instructions and validation are planned |
 
-Windows and Linux builds are not yet validated. Intel Macs and physical
-iPhone/iPad/Android devices are also unverified. This project is under active
-development; compatibility depends on the browser and GPU.
+## Feature support and roadmap
 
-The browser platform currently includes rendering, input, Web Audio, standard
-UE HTTP over fetch, persistent saves, browser services, crash diagnostics and
-asset streaming. Multiplayer networking is deferred. The rendering path uses
-Unreal's mobile renderer; Nanite and Lumen parity are not provided.
+Status describes the current implementation. Planned work has no committed
+release date. **Not scheduled** means there is no committed implementation
+plan; **Unverified** means compatibility still needs testing.
+
+| Feature | Status | Current behavior | Planned behavior |
+|---|---|---|---|
+| WebGPU rendering | Supported | Uses Unreal's mobile renderer in the browser and through Dawn natively. Both share rendering limitations. | - |
+| Editor packaging | Supported | HTML5 cooking and packaging, Development/Shipping builds and local server launch scripts. | - |
+| Core gameplay | Supported | C++/Blueprint gameplay, standard skeletal animation, core Chaos physics and Slate/UMG remain included. | - |
+| Standard input | Supported | Keyboard, mouse, touch, standard gamepads, pointer lock and fullscreen. | - |
+| Audio playback | Supported | UE audio mixer output through stereo Web Audio. | - |
+| HTTP requests | Supported | Standard UE HTTP APIs use browser fetch. | - |
+| Persistent saves | Supported | UE save APIs use browser-managed persistent storage. | - |
+| Asset streaming | Supported | Cooked pak/IoStore content loads through HTTP ranges, with bounded caching, retries and progress reporting. | - |
+| Crash diagnostics | Supported | Browser error reporting, captured logs and development symbol support. | - |
+| Multiplayer | Planned | No completed browser-compatible UE multiplayer transport. HTTP does not provide replication transport. | Design a separate networking module, evaluating WebSocket and WebRTC transports with compatible server endpoints. |
+| Video and streaming media | Planned | Browser Media Framework integration, video textures and WebRTC media are unavailable. | Integrate browser video/audio with UE materials and playback controls. HLS remains under evaluation. |
+| Advanced content delivery | Planned | No managed downloadable packs, persistent content cache or prefetch policies. | Add downloadable content, versioned caching, prefetch and storage-budget management. |
+| WebGPU virtual geometry | Under evaluation | No custom virtual geometry implementation is integrated. | Investigate meshlets, GPU LOD/culling and geometry streaming. Unreal Nanite compatibility and performance parity are not promised. |
+| Unreal Nanite | Not scheduled | Unsupported by the current rendering path. | - |
+| Desktop rendering features | Not scheduled | Lumen, hardware ray tracing, Path Tracer, Virtual Shadow Maps and TSR are unavailable. | - |
+| Additional rendering features | Not scheduled | Virtual textures, mesh distance fields, volumetric clouds, strand-based hair, Compute Framework mesh deformers, sorted-triangle OIT and Substrate specular profiles are disabled or unsupported. | - |
+| Advanced input | Not scheduled | IME composition, mobile virtual keyboards, controller vibration and nonstandard gamepad mappings are unavailable. | - |
+| Additional audio features | Not scheduled | Microphone capture, voice chat, surround output and output-device selection are unavailable. | - |
+| Rendering optimizations | Not scheduled | Parallel RHI execution, browser PSO precaching and GPU timestamp queries are unavailable. | - |
+| Browser Launch On | Not scheduled | No browser device appears in the editor's Launch On menu. Packaging and server scripts work. | - |
+| Dynamic modules and Live Coding | Not scheduled | The browser executable is monolithic. Dynamic module loading, hot reload and Live Coding are unavailable. | - |
+| Larger Wasm memory | Partial | Default memory mode has a 4 GiB heap ceiling. Optional native Memory64 requires additional browser support. | - |
+| Native plugins and SDKs | Requires adaptation | Plugins with desktop binaries or OS dependencies cannot be assumed compatible. | No general porting commitment; individual integrations require evaluation. |
+
+## Browser restrictions
+
+These restrictions apply independently of the project's implementation progress:
+
+- **Networking:** ordinary web pages cannot directly use Unreal's native UDP transport. Multiplayer needs a browser-compatible transport and server endpoint.
+- **Native integration:** desktop DLLs, external processes and unrestricted filesystem access are unavailable. Integrations must use WebAssembly-compatible code and browser APIs.
+- **User interaction:** audio playback may require a click or key press. Fullscreen and pointer lock also follow browser activation and permission policies. See [browser audio policies](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices#autoplay_policy).
+- **Storage:** saves and cached assets are subject to browser quotas, eviction and users clearing site data. See [browser storage behavior](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system).
+- **Hosting and capabilities:** this build requires HTTPS or localhost, cross-origin isolation, WebGPU, transferable OffscreenCanvas and WebAssembly JSPI. WebGPU availability alone does not guarantee compatibility.
+
+The default 4 GiB memory ceiling and disabled rendering parallelism are current
+implementation constraints, rather than universal browser limits.
 
 ## Before you build
 
