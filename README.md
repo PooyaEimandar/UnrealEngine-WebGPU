@@ -19,7 +19,22 @@ not a plugin you can install into the standard Epic Games Launcher build.
 
 [![Unreal Engine gameplay running in a browser with WebGPU](asset/unreal-engine-webgpu.gif)](https://youtu.be/AyVYaKl-kJY)
 
-[▶ Click the preview to watch the full demo on YouTube.](https://youtu.be/AyVYaKl-kJY)
+[▶ Click the preview to watch the full demos on YouTube.](https://youtube.com/playlist?list=PLSttipZ8BrZA&si=N-n6ZkU8vjSJWQRL)
+
+## Why this project
+
+Ten years of building cloud gaming technology, have shown me how much of the gaming community the industry leaves behind: people who cannot afford to buy or continually upgrade gaming hardware, including smartphones.
+
+At the other end of the market, devices such as Meta’s Ray-Ban smart glasses highlight a different constraint. Even people who can afford advanced, premium technology use small devices with limited storage, processing power and battery life. Downloading games that occupy tens of gigabytes and running demanding graphics locally is difficult on such hardware. Streaming has an important role to play here.
+
+Cloud gaming improves accessibility but remains expensive to scale. Even a server with ten GPUs may support only around 64 concurrent players.
+
+I believe hybrid rendering powered by WebGPU offers a better approach by combining local rendering and cloud rendering, allowing games to leverage players’ existing hardware while offloading demanding workloads to the cloud when needed.
+
+The vision is simple: open a link, play instantly, on almost any device without expensive hardware, and at a fraction of traditional cloud gaming costs.
+
+[![Unreal Engine gameplay running in a browser with WebGPU and networking](asset/unreal-engine-webgpu-networking.gif)](https://youtu.be/6WJdi4Iynrc?si=Uy4ehZKxgNOwGEiy)
+
 
 ## Sponsor the project
 
@@ -39,8 +54,8 @@ The current branch is **`5.8-webgpu`**, based on **Unreal Engine 5.8.3**.
 | Build host | Status |
 |---|---|
 | macOS on Apple Silicon | Current development and verified build/package path |
-| Windows | Coming soon — build instructions and validation are planned |
-| Linux | Coming soon — build instructions and validation are planned |
+| Windows | Coming soon - build instructions and validation are planned |
+| Linux | Coming soon - build instructions and validation are planned |
 
 ## Feature support and roadmap
 
@@ -52,6 +67,7 @@ plan; **Unverified** means compatibility still needs testing.
 |---|---|---|---|
 | WebGPU rendering | Supported | Uses Unreal's mobile renderer in the browser and through Dawn natively. Both share rendering limitations. | - |
 | Editor packaging | Supported | HTML5 cooking and packaging, Development/Shipping builds and local server launch scripts. | - |
+| Packaged hosting | Supported | Bundled Rust host built on Sib serves Wasm, JavaScript and streamed assets. HTTPS prefers HTTP/2 with HTTP/1.1 fallback; localhost asset-only HTTP is also supported. | Validate Windows and Linux host binaries. |
 | Core gameplay | Supported | C++/Blueprint gameplay, standard skeletal animation, core Chaos physics and Slate/UMG remain included. | - |
 | Standard input | Supported | Keyboard, mouse, touch, standard gamepads, pointer lock and fullscreen. | - |
 | Audio playback | Supported | UE audio mixer output through stereo Web Audio. | - |
@@ -59,7 +75,7 @@ plan; **Unverified** means compatibility still needs testing.
 | Persistent saves | Supported | UE save APIs use browser-managed persistent storage. | - |
 | Asset streaming | Supported | Cooked pak/IoStore content loads through HTTP ranges, with bounded caching, retries and progress reporting. | - |
 | Crash diagnostics | Supported | Browser error reporting, captured logs and development symbol support. | - |
-| Multiplayer | Planned | No completed browser-compatible UE multiplayer transport. HTTP does not provide replication transport. | Design a separate networking module, evaluating WebSocket and WebRTC transports with compatible server endpoints. |
+| Multiplayer | Supported | Browser WebTransport datagrams or secure WebSocket connect through a Sib gateway to a native UE UDP server. Replication, RPCs, native/browser co-play and explicit reconnect pass local tests. | Real-user/WAN testing, longer endurance and capacity measurements, account-service integration and broader platform coverage. |
 | Video and streaming media | Planned | Browser Media Framework integration, video textures and WebRTC media are unavailable. | Integrate browser video/audio with UE materials and playback controls. HLS remains under evaluation. |
 | Advanced content delivery | Planned | No managed downloadable packs, persistent content cache or prefetch policies. | Add downloadable content, versioned caching, prefetch and storage-budget management. |
 | WebGPU virtual geometry | Under evaluation | No custom virtual geometry implementation is integrated. | Investigate meshlets, GPU LOD/culling and geometry streaming. Unreal Nanite compatibility and performance parity are not promised. |
@@ -78,7 +94,7 @@ plan; **Unverified** means compatibility still needs testing.
 
 These restrictions apply independently of the project's implementation progress:
 
-- **Networking:** ordinary web pages cannot directly use Unreal's native UDP transport. Multiplayer needs a browser-compatible transport and server endpoint.
+- **Networking:** ordinary web pages cannot directly use Unreal's native UDP transport. This fork bridges WebTransport or secure WebSocket through a separate gateway. Browser listen servers, raw TCP/UDP sockets and LAN discovery are unavailable.
 - **Native integration:** desktop DLLs, external processes and unrestricted filesystem access are unavailable. Integrations must use WebAssembly-compatible code and browser APIs.
 - **User interaction:** audio playback may require a click or key press. Fullscreen and pointer lock also follow browser activation and permission policies. See [browser audio policies](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices#autoplay_policy).
 - **Storage:** saves and cached assets are subject to browser quotas, eviction and users clearing site data. See [browser storage behavior](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system).
@@ -92,12 +108,13 @@ implementation constraints, rather than universal browser limits.
 | Requirement | What you need |
 |---|---|
 | Source access | A GitHub account linked to Epic Games, with access to Epic's engine repository and this fork |
-| Mac | An Apple Silicon Mac; the recorded test machine is an M2 Max with 96 GB RAM |
+| Mac | An Apple Silicon Mac |
 | Xcode | Full Xcode with its macOS SDK, selected as the active developer directory. The fork's Apple SDK configuration targets Xcode 26.1.1. Command Line Tools alone are insufficient. |
 | Rosetta | Required by the Intel `protoc` executable bundled with UE's build dependencies |
 | Build tools | Git, Python 3.9+, CMake 3.22+ and Ninja |
+| Rust/Cargo | Stable Rust toolchain to build the bundled native [Sib host](https://github.com/PooyaEimandar/sib) |
 | Emscripten | Use **6.0.10**, the version used for project validation; Node.js is supplied by emsdk |
-| Browser | Chrome with WebGPU, WebAssembly JSPI and transferable OffscreenCanvas; see the tested versions below |
+| Browser | Browser with WebGPU, WebAssembly JSPI and transferable OffscreenCanvas |
 
 Local validation used macOS 27.0.1, Emscripten 6.0.10 and Chrome
 155.0.8059.81. Safari version 27.0.1 & Firefox Nightly 155.0a1 also rendered the sample. These are recorded results, not minimum
@@ -147,6 +164,22 @@ python3 --version
 cmake --version
 ninja --version
 ```
+
+Install stable Rust and Cargo using the
+[official rustup instructions](https://rust-lang.org/tools/install/), then open
+a new Terminal and verify:
+
+```bash
+rustc --version
+cargo --version
+```
+
+The HTML5 build and packaging steps compile the host automatically. Cargo uses the
+repository's lockfile and pinned
+[Sib revision `806b59fa59f0`](https://github.com/PooyaEimandar/sib/commit/806b59fa59f060994f663c2faad52dcee00e4845);
+a separate Sib checkout is unnecessary. To use a prebuilt host, set
+`HTML5_GATEWAY_BINARY` to its absolute path before building or packaging, and
+keep its `HTML5Host-Licenses.txt` alongside it.
 
 Install the pinned Emscripten version using the
 [official emsdk workflow](https://emscripten.org/docs/getting_started/downloads.html):
@@ -287,41 +320,33 @@ Play runs the native preview; it does not launch the browser build.
 **Package For only selects the target. The top Package Project action starts
 the build and opens the output-directory picker.**
 
-The output contains `serve.py`, `HTML5Content.txt`, the HTML/JavaScript/Wasm
-runtime and cooked content. 
+The output contains `run.sh`, `run.bat`, the native `html5-gateway` executable,
+`HTML5Host-Licenses.txt`, `HTML5Content.txt`, the HTML/JavaScript/Wasm runtime and
+cooked content. The host is built for the packaging machine's OS and architecture.
 
 ## 6. Run the packaged game in a browser
 
-Locate the folder containing `serve.py`. This is the package root used in the next step. Keep the complete directory structure intact. Open a terminal in that folder and run:
+Locate the folder containing `run.sh` and `html5-gateway`. Keep the complete
+directory structure intact. Open a Terminal in that folder and run:
 
 ```bash
-./run.sh # or run.bat
+./run.sh
 ```
 
+The launcher starts the bundled host at `http://127.0.0.1:8000` and opens the
+game in your browser. Use `./run.sh --port 8080` to choose another port, or
+`./run.sh --no-open` to serve without opening a browser. Press **Ctrl+C** in
+the Terminal to stop the host. Running the package needs neither Python nor Rust.
+
+Asset-only localhost HTTP works without a certificate. Public hosting and the
+multiplayer gateway require TLS. The gateway can generate a self-signed
+localhost certificate for development; its setup guide explains browser trust.
+
+The included `run.bat` expects a matching Windows host executable. A package
+built on Mac includes the Mac host; copying it to another OS does not rebuild
+that executable. Windows and Linux host validation is still planned.
+
 ![HTML5 packaging options in Unreal Editor on macOS](asset/screenshot-2.jpg)
-
-## Common problems
-
-| Problem | What to check |
-|---|---|
-| HTML5 is missing or Package Project is disabled | Use this fork's built editor. Validate the SDK, then save and restart the editor with the SDK environment. Target availability is cached at startup. |
-| SDK shows Installed: -- | Source `emsdk_env.sh` and launch the editor from that Terminal. Refresh the SDK report; restart if the editor started without a valid SDK. |
-| Clicking Package For does nothing | Select HTML5 there, then click Package Project at the top of the submenu. |
-| No browser appears under Quick Launch | Browser Launch On discovery is not implemented. Package the project and use `serve.py`. |
-| Packaging requests a missing game target | Check runtime plugins and configuration. Use the sample's plugin setup above, or build the project's own HTML5 target. A Development executable does not satisfy a Shipping package. |
-| The page reports missing browser features | Use a browser with WebGPU, JSPI, transferable OffscreenCanvas and cross-origin isolation. WebGPU support alone is insufficient. |
-| The first page is blank or the wrong level opens | Check Game Default Map, the packaged map list and the browser diagnostics. Keep the HTML, JavaScript, Wasm and content from the same package. |
-
-## Contribute
-
-Browser/device compatibility reports, reproducible bug reports, documentation
-improvements and testing feedback are welcome in this repository's issues.
-Include the engine branch or revision, operating system, browser version,
-GPU and reproduction steps.
-
-Submit engine implementation changes and discussions containing Engine Code
-in the restricted fork. Keep public reports focused on behavior and diagnostics
-that can be shared publicly.
 
 ## License 
 
